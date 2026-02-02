@@ -1,0 +1,9 @@
+#from this documentation complete step 1 and step 2
+  #once completed with the step 1 and step2
+  https://docs.docker.com/engine/install/ubuntu/
+  #to check docker version
+   26  docker --version'
+  #this will give you information about docker
+   27  docker info
+  ##all the command you can see using this 
+   28  docker

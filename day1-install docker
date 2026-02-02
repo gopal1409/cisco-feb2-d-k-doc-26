@@ -36,4 +36,27 @@ ip a
 #below command will show all the information about your container
    72  docker container inspect webhost
 ##you need to paste to log file path and the ip address of the cotnainer
+#container vs process id
+#we will create a mongo db container
+ 76  docker run --name mongo -d mongo
+   77  docker ps
+ #top command is showing that the container is running as process id
+   80  docker top mongo
+   81  ps aux
+#check the process id of the container
+   82  docker top mongo
+##replace this with your own process id while killing
+   83  kill -9 7185
+   84  docker ps
+#docker ps -a will show running and stopped container
+   85  docker ps -a
+#if you want to start a container
+   86  docker start mongo
+   87  docker ps
+#stop a container
+   88  docker stop mongo
+#this will show all the container utilization report
+   92  docker container stats
+#press ctr c to exit
+
 

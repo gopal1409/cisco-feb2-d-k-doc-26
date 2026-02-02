@@ -7,3 +7,13 @@
    27  docker info
   ##all the command you can see using this 
    28  docker
+#lets create our first container
+#this will create the fdirst container
+ 34  docker container run --publish 80:80 --detach nginx
+#this will show the container
+   35  docker ps
+##curl localhost will show the test page of the container
+   36  curl localhost
+######check the ip address of the docker machine 
+ip a
+###copy the ip and paste it in the browser you will see the test page of nginx

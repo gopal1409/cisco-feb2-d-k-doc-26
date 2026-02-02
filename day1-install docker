@@ -58,5 +58,8 @@ ip a
 #this will show all the container utilization report
    92  docker container stats
 #press ctr c to exit
-
+##--detach will make your container run as background or deamon process if you dont give --detach it will run the container as foreground process. 
+ 25  docker run -p 84:80 nginx
+   26  docker run -p 84:80 -d nginx
+####docker networking
 

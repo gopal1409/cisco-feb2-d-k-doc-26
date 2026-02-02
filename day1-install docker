@@ -17,3 +17,14 @@
 ######check the ip address of the docker machine 
 ip a
 ###copy the ip and paste it in the browser you will see the test page of nginx
+
+#next time when we create a container with same image it will not download as the image is availble in local repo
+   59  docker container run --publish 81:80 --detach nginx
+   60  docker images
+#lets create a new container with new image it will download
+   61  docker container run --publish 82:80 --detach httpd
+   62  docker ps
+  #if you look into all the container the name is dictionary generate if you want to give a custom name --name
+   64  docker run -p 83:80 -d --name webhost nginx
+   65  docker ps
+

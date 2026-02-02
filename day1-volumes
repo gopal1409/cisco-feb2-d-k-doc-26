@@ -1,0 +1,45 @@
+#we are creating a container with mysql db passwing environment varaible
+  #-v will create a persistent volume with label and the path is inside the container
+57  docker container run -d --name db -e MYSQL_ALLOW_EMPTY_PASSWORD=true -v mysql-db:/var/lib/mysql mysql:8
+  #this will show db contianer created 
+   58  docker ps
+  #thisx will show volume created 
+   59  docker volume ls
+  #if you really want to see where the data is stored 
+   60  docker volume inspect mysql-db
+  #we will go to the real path in your hdd
+   61  cd /var/lib/docker/volumes/mysql-db/_data
+   62  ls
+  #lets login inside the container -it interactive terminal
+  docker exec -it db bash
+  ###once login inside the container we will do mysql login 
+   mysql -u root -p
+#password is nothing just press enter
+  #lets check all the database
+  show databases;
+  create database employee;
+  show databases;
+##this will show that an employee db is created
+  exit
+  exit
+  ##now if you do ls you will see an employee forlder created. 
+  ###lets delete the mysql db and recreated
+    68  docker ps
+   69  docker stop db;
+   70  docker rm db
+   71  docker ps -a
+##we will now create a new container with update mysql image 
+73  docker container run -d --name db -e MYSQL_ALLOW_EMPTY_PASSWORD=true -v mysql-db:/var/lib/mysql mysql:8.4.8
+   #again login to the db 
+   #lets login inside the container -it interactive terminal
+  docker exec -it db bash
+  ###once login inside the container we will do mysql login 
+   mysql -u root -p
+#password is nothing just press enter
+  #lets check all the database
+  show databases;
+ #the above command will show the employee db
+
+##this will show that an employee db is created
+  exit
+  exit

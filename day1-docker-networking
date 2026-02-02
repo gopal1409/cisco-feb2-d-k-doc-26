@@ -1,0 +1,18 @@
+#this will show all the network adapter
+39  docker network ls
+  #this will create a custom network which will be attached to your custom network
+   40  docker network create my_app_net
+   41  docker network ls
+  #current no container attachec
+   42  docker network inspect my_app_net
+  #we will create two container and attach with custom network
+   43  docker run -d --name new_nginx --network my_app_net nginx
+   44  docker run -d --name old_nginx --network my_app_net nginx
+   45  docker ps
+  #this will show two container with the network
+   46  docker network inspect my_app_net
+#docker exec allowed internal communication in container
+   51  docker exec old_nginx curl new_nginx
+   52  docker exec new_nginx curl old_nginx
+
+   55  history

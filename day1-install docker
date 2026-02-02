@@ -27,4 +27,13 @@ ip a
   #if you look into all the container the name is dictionary generate if you want to give a custom name --name
    64  docker run -p 83:80 -d --name webhost nginx
    65  docker ps
+#lets find our where docker keep the logs files and hostname path in your local system
+ 68  docker ps
+#we will check the webhost containst
+   69  curl localhost:83
+#if you want to see the logs of your container
+   71  docker logs webhost
+#below command will show all the information about your container
+   72  docker container inspect webhost
+##you need to paste to log file path and the ip address of the cotnainer
 

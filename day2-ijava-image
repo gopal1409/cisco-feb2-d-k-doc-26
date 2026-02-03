@@ -15,3 +15,24 @@
      ##open the browser inside your vm 
      192.168.100.10:8080/hello
        #it will show hello in your browser but it is served using a virtual machine
+#lets serve the application using a container
+#we will create a dockerfile in the root directory of the application
+ 95  touch dockerfile
+   96  vim dockerfile
+ #inside the dockerfile provide this instruction all the instruction will be started by capital letter copy line 23 24 25 26
+FROM openjdk:27-ea-slim-trixie
+WORKDIR /app
+COPY ./target/spring-boot-2-hello-world-1.0.2-SNAPSHOT.jar /app/app.jar
+ENTRYPOINT ["java","-jar","/app/app.jar"]
+#docker build will build the image using the docker file -t once the image is build you can tag the image with this name
+  100  docker build -t myapp .
+#docker image will show all the images
+  101  docker images
+#image history will show the layers 
+  102  docker image history myapp:latest
+  103  docker run -d -p 81:8080 myapp
+ #if you want to see the logs you can see it change the container id with youre own container id
+  106  docker logs e197
+  ##open the browser inside your vm now it is serverd using a container
+     192.168.100.10:81/hello
+  111  docker logs 702

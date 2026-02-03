@@ -60,5 +60,8 @@ docker build -t my-flask-app .
 Once the image is built, run it as a container using the following command. The -p 5000:5000 flag maps port 5000 on your host machine to port 5000 in the container [1, 2]. 
 bash
 docker run -d -p 5000:5000 --name flask_container my-flask-app
+#check the container is running or not 
+docker ps
+#this will show flask_container
 6. Verify the Application
 Open your web browser and navigate to http://localhost:5000. You should see the "Hello, Docker!" messag

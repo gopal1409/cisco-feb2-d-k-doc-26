@@ -1,0 +1,17 @@
+##we will install jdk and maven
+  83  apt install default-jdk
+   84  apt install maven
+  #clone an spring application 
+   85  git clone https://github.com/gopal1409/spring-hello.git
+   86  cd spring-hello/
+     ##compile the app
+   87  mvn clean package
+   88  ls
+     #in the target directory a jar file is created 
+   89  ls target/
+     #lets execute the jar file using java -jar
+   90  java -jar ./target/spring-boot-2-hello-world-1.0.2-SNAPSHOT.jar
+     #if you see the application is running on port 80
+     ##open the browser inside your vm 
+     192.168.100.10:8080/hello
+       #it will show hello in your browser but it is served using a virtual machine

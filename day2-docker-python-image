@@ -1,0 +1,64 @@
+Steps to Containerize Your App
+Here is a step-by-step guide and example files:
+#
+  #come out of the spring hello directory 
+  cd ..
+  #lets create a new directort
+  mkdir pyapp
+  cd pyapp
+  #inside the directory create a file app.py and copy paste from line 13 till 23 and save the file
+1. Create a Flask Application
+First, create a simple Flask application file (e.g., app.py). 
+
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route('/')
+def hello_world():
+    return 'Hello, Docker!'
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0')
+      
+2. Create a Requirements File
+Create a requirements.txt file in the same directory to list your Python dependencies. and put line 27
+      
+Flask
+3. Create a Dockerfile 
+Create a file named Dockerfile (no extension) in your project's root directory. This file contains instructions for Docker on how to build the image. 
+dockerfile
+      #inside the docker file add line 33 till line 54
+# Use an official Python runtime as a parent image
+FROM python:3.10-slim
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the requirements file into the container at /app
+COPY requirements.txt .
+
+# Install any needed packages specified in requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the application code into the container
+COPY . .
+
+# Expose the port the app runs on
+EXPOSE 5000
+
+# Define environment variable
+ENV FLASK_APP=app.py
+
+# Run the application when the container starts
+CMD ["flask", "run", "--host=0.0.0.0"]
+4. Build the Docker Image 
+Open your terminal or command prompt, navigate to your project directory (where Dockerfile, app.py, and requirements.txt are located), and run the following command. The -t flag tags the image with a name (my-flask-app in this case), and the . at the end specifies the build context (current directory) [1, 2]. 
+bash
+docker build -t my-flask-app .
+5. Run the Docker Container 
+Once the image is built, run it as a container using the following command. The -p 5000:5000 flag maps port 5000 on your host machine to port 5000 in the container [1, 2]. 
+bash
+docker run -d -p 5000:5000 --name flask_container my-flask-app
+6. Verify the Application
+Open your web browser and navigate to http://localhost:5000. You should see the "Hello, Docker!" messag

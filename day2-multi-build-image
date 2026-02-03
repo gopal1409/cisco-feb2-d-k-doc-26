@@ -1,0 +1,29 @@
+#go to our spring-hello app
+148  cd /root/spring-hello/
+  149  ls
+  #we will remove the docker file
+  150  rm dockerfile
+  
+  151  vim dockerfile
+#stage 1 we are building spring boot application
+FROM maven:3.9.12-amazoncorretto-17-alpine AS gopal
+WORKDIR /app
+COPY pom.xml .
+RUN mvn dependency:go-offline
+COPY src ./src
+RUN mvn package -DskipTest
+#lets create the final docker file
+FROM eclipse-temurin:8u472-b08-jre-ubi10-minimal
+WORKDIR /app
+EXPOSE 8080
+COPY --from=gopal /app/target/*.jar app.jar
+ENTRYPOINT ["java","-jar","app.jar"]
+
+#lets build it 
+ 171  docker build -t multiapp .
+  172  docker images
+  #once build you can check the layers
+  173  docker image history multiapp:latest
+  #task with multi build
+  #tag your image with hub.docker.com repo
+  #upload the image in the hub.docker.com and verify

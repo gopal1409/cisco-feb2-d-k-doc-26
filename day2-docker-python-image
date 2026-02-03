@@ -65,3 +65,22 @@ docker ps
 #this will show flask_container
 6. Verify the Application
 Open your web browser and navigate to http://localhost:5000. You should see the "Hello, Docker!" messag
+
+#lets update the application
+129  vi app.py
+#inside app.py file we need to modify the line 'Hello, Docker!' to 'Hello Gopal'
+#after this delete the my-flask-app container 
+  130  docker ps
+#replace the my-flask-app container id with your id
+  131  docker stop 5ce
+  132  docker rm 5ce
+##rebuild it
+  133  docker build -t my-flask-app .
+#once rebuild you can see the new image
+  138  docker images
+#we will spin up a new container with the updated image
+  139  docker run -d -p 5000:5000 --name flask_container my-flask-app
+  140  docker ps
+#finally refresh your browser page with 5000 port number you will see the new page
+
+

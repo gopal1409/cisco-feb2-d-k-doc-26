@@ -32,4 +32,23 @@ spec: #we need to define specification of the pod
     image: apache
     ports:
     - containerPort: 81
+##lets create an error full container #change the image to your first image which is java based 
+ 52  kubectl run my-custom-image --image=gopal1409/helloapp --port=8080 --dry-run=client -o yaml > pod3.yml
+   53  cat pod3.yml
+   54  kubectl apply -f pod3.yml
+##after a minute or so do get pod you will see some crash loopback error 
+   55  kubectl get pod
+#using kubectl logs we will see why we are geeting the error
+   56  kubectl logs my-custom-image
+##lets delete the container 
+ 64  kubectl delete pod my-custom-image
+#now change the image to an python based app which we have upload yeasterday if you see we are running the python app in port 50000
+   65  kubectl run my-custom-image --image=gopal1409/my-flask-app --port=5000 --dry-run=client -o yaml > pod3.yml
+   66  kubectl apply -f pod3.yml
+#check the pod is running after 1 min
+   67  kubectl get pod
+#check the logs of the python app
+   68  kubectl logs my-custom-image
+#finally you can see the pod is in running state
+   69  kubectl get pod
 

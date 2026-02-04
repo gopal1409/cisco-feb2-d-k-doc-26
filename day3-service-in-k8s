@@ -1,0 +1,12 @@
+##lets expose our deployment outside k8s cluster
+   117  kubectl expose deploy --help
+  #while expose your service if you dont give the name of the service it will autmaticall choose internal service clusterip
+  118  kubectl expose deployment my-first-deployment --port=80 --name=first-service
+  #get svc will show that it is exposed using internal service
+  119  kubectl get svc
+  #to expose the application using nodeport
+  120  kubectl expose deployment my-first-deployment --port=80 --type=NodePort --name=first-service-nodeport
+  #get svc will show the node port some 30k series
+  121  kubectl get svc
+  #get the private ip address of the node machine copy it paste in the browser colon port number which is 30k series
+  122  kubectl get nodes -o wide

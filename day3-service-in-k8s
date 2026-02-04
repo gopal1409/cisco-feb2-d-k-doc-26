@@ -37,4 +37,20 @@
 #in the browser refresh the page you will see the new phpsysinfo web site where it will show an ip address which is your container ip 
 #with the below mentioned command you can see the container ip
   142  kubectl get pod -o wide
+#rollback to previous releases
+145  kubectl get deployment
+#this will show the rollout status
+  146  kubectl rollout status deployment my-first-deployment
+#this will show the rollout history how many update we have done it
+  147  kubectl rollout history deployment my-first-deployment
+#to gather more information about the rollout with image
+  148  kubectl rollout history deployment my-first-deployment --revision=1
+  149  kubectl rollout history deployment my-first-deployment --revision=2
+ #you can use undo to rollout to previous release
+  151  kubectl rollout undo deployment my-first-deployment
+#refresh the webpage now you will see the nginx image
+  152  kubectl get deploy
+#to rollout to an specific release
+  153  kubectl rollout undo deployment my-first-deployment --to-revision=2
+
 

@@ -1,0 +1,15 @@
+#lets create our first deployment
+    85  kubectl create deploy
+  # if you need more help 
+   88  kubectl create deploy --help
+ #generate the skeleton of deployment
+   90  kubectl create deploy my-first-deployment --image=nginx --port=80 --dry-run=client -o yaml
+   91  kubectl create deploy my-first-deployment --image=nginx --port=80 --dry-run=client -o yaml > dep.yml
+   92  kubectl apply -f dep.yml
+  #this will show the deployment
+   93  kubectl get deploy
+   94  kubectl get pod
+  #lets delete the pod replace the pod name with your own pod name 
+   95  kubectl delete pod my-first-deployment-77bdf869fc-xkdkc
+  #a new pod will be autmatically created
+   96  kubectl get pod

@@ -10,3 +10,31 @@
   121  kubectl get svc
   #get the private ip address of the node machine copy it paste in the browser colon port number which is 30k series
   122  kubectl get nodes -o wide
+#lets scale the deployment and see that it is attached with your service
+#check the ip address of all the pod
+ 127  kubectl get pod -o wide
+  128  kubectl get svc
+#when we describe the service it will show all the endpoint which is the ip address of your pod
+  129  kubectl describe svc first-service-nodeport
+#lets increase the replica count
+  130  kubectl scale deploy my-first-deployment --replicas=5
+  131  kubectl get pod
+  132  kubectl get pod -o wide
+#describe service will now show all the 5 pod
+  133  kubectl describe svc first-service-nodeport
+#lets update the image and from the browser we can access the pod ip
+136  kubectl get deploy
+#inside the yaml file check the image it container the nginx image
+  137  cat dep.yml
+#we will update the image with a new image
+  138  kubectl set image deploy my-first-deployment nginx=nulldevil/phpsysinfo
+#get deploy will show that some cotnainers are going down and up
+  139  kubectl get deploy
+#descirbe deploy you can see the new image
+  140  kubectl describe deploy
+#if you look into the rs you will see there are two different rs one is for older image another is for new image
+  141  kubectl get rs
+#in the browser refresh the page you will see the new phpsysinfo web site where it will show an ip address which is your container ip 
+#with the below mentioned command you can see the container ip
+  142  kubectl get pod -o wide
+

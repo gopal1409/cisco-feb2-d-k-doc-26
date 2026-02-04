@@ -51,4 +51,14 @@ spec: #we need to define specification of the pod
    68  kubectl logs my-custom-image
 #finally you can see the pod is in running state
    69  kubectl get pod
+#there is an problem with pod if you delete the pod it will not come back
+#this will show that there are multipel nodes
+76  kubectl get nodes
+   77  kubectl get pod -o wide
+#if i delete one of the pod it should started in another node
+   78  kubectl delete pod my-first-pod
+#but when i do get it is not coming up
+   79  kubectl get pod
+   80  kubectl delete pod nginx
+##the job of the pod is to deploy your container image it is not doing any ha activity
 

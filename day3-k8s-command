@@ -1,0 +1,15 @@
+#how to gather more information about a node
+   18  kubectl get nodes
+   19  kubectl get nodes -o wide
+  #desribe command will give you more information about the node
+   20  kubectl describe node eoc-controller
+  ######master componet running as container 
+   23  kubectl get pod -A
+  #docker ps will not show any resuly
+   24  docker ps
+  #this will show that the container of master component
+   25  crictl ps
+   26  crictl images
+   27  crictl
+##################################we need to see where this componet are running
+  kubectl get pod -A -o wide

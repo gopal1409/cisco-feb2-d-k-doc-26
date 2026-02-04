@@ -23,3 +23,44 @@
   103  kubectl get rs
 ##if you look into the pod deploy+rs+unqiuehashvalue
   104  kubectl get pod
+#to map both the pod with the deployment metadata.spec.selctor. matchlabel
+kubectl get pod --show-labels
+#you will see that both the pod will have same labels
+ 108  kubectl get deploy
+#check describe deploy where you can see the strategy event log created two pod 
+  109  kubectl describe deploy my-first-deployment
+  110  kubectl get pod
+#if you desribe one of the pod you will see that the pod is controlled by rs change the pod id with your id
+  111  kubectl describe pod my-first-deployment-77bdf869fc-d9ckz
+#####if you want to check where this pod is running
+kubectl get pod -o wide
+##may be the pod is running in the same node or different node.
+#below is the deployment manifest explanation
+#kubectl apply -f dep.yml
+apiVersion: apps/v1 #version of the api
+kind: Deployment #kind we are creating deployment
+metadata: 
+  creationTimestamp: null
+  labels:
+    app: my-first-deployment
+  name: my-first-deployment
+spec: #we are defining the spec of the deployment
+  replicas: 2
+  selector: #selector is used to select the pods that are created by this deployment
+    matchLabels: 
+      app: my-first-deployment #all the pod will be labeled with this label
+  strategy: {}
+  template: #this template need to be applied with both the pod 
+    metadata:
+      creationTimestamp: null
+      labels: #same label as above
+        app: my-first-deployment
+    spec: #in template spec we are defining the container
+      containers:
+      - image: nginx
+        name: nginx
+        ports:
+        - containerPort: 80
+        resources: {}
+status: {}
+

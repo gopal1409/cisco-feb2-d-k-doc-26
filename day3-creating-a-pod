@@ -1,0 +1,35 @@
+#lets create our first pod 
+   36  kubectl run
+  #to create the pod you can use the help
+   37  kubectl run --help
+  ##while creating the pod we need to define name and image below mentioned will do a dry and automatically generate an yaml file
+   38  kubectl run my-first-pod --image=nginx --port=80 --dry-run=client -o yaml
+   39  kubectl run my-first-pod --image=nginx --port=80 --dry-run=client -o yaml > pod2.yml
+  ###if you want to see the yaml file
+   40  cat pod2.yml
+  #to apply the pod 
+   41  kubectl apply -f pod2.yml
+  #get pod will show that there is a pod runnign wait fir 2 min till it starty running
+   42  kubectl get pod
+  #this will show that where your pod is running
+   43  kubectl get pod -o wide
+  #describe will provide more information about the pod 
+   44  kubectl describe pod my-first-pod
+  ###finally putting some more information about the pod 
+  #kubectl apply -f pod.yml
+#all the yaml file will run from top to bottom and left to right
+apiVersion: v1 #this is the version of the api
+kind: Pod #it is the name of the api
+metadata: #using pod metadata
+  name: nginx #name of the pod
+spec: #we need to define specification of the pod
+  containers: 
+  - name: nginx
+    image: nginx:1.14.2
+    ports:
+    - containerPort: 80
+  - name: apache
+    image: apache
+    ports:
+    - containerPort: 81
+

@@ -1,0 +1,53 @@
+#login to the eoc-node2
+  #and create a directory using the terminal
+  mkdir /mnt/data
+  ls /mnt/data
+  #####################once created we will create the persistent volume
+  vi pv.yml
+  ###############################
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: task-pv-volume
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem #it will look for file zfs nfs or ext 
+  accessModes:
+    - ReadWriteOnce #read #readwritemany
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: slow #using this storage class name we will attach the volume with pvc 
+  hostPath:
+    path: "/mnt/data" #this is the path in the node where the data will be stored
+  #apply it 
+    kubectl apply -f pv.yml
+    ####lets get the pv
+    [root@eoc-controller ~]$ kubectl get pv
+NAME             CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS   VOLUMEATTRIBUTESCLASS   REASON   AGE
+task-pv-volume   10Gi       RWO            Recycle          Available           slow           <unset>                          7s
+##check that status showing avaialbe claim showing blank
+    ##lets create the pvc
+    [root@eoc-controller ~]$ vi pvc.yml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: task-pv-clain
+spec:
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: slow
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+
+[root@eoc-controller ~]$ kubectl apply -f pvc.yml
+persistentvolumeclaim/task-pv-clain created
+      #if you see pvc is mappen with pv you can check the volume field
+[root@eoc-controller ~]$ kubectl get pvc
+NAME            STATUS   VOLUME           CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+task-pv-clain   Bound    task-pv-volume   10Gi       RWO            slow           <unset>                 10s
+      #look into the output of pv claim it is showing attached with your pv
+[root@eoc-controller ~]$ kubectl get pv
+NAME             CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                   STORAGECLASS   VOLUMEATTRIBUTESCLASS   REASON   AGE
+task-pv-volume   10Gi       RWO            Recycle          Bound    default/task-pv-clain   slow           <unset>                          3m50s

@@ -1,0 +1,95 @@
+#lets label the node so that we can spin up the mysql db in a specific node2
+   227  kubectl get nodes
+  228  kubectl get nodes --show-labels
+  229  kubectl label node eoc-node2 disktype=mysqlssd
+  230  kubectl get nodes --show-labels
+###
+  vi mysql.yml
+#####
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+spec: #this is the specification of the deployment
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec: #container which is going to run inside the pod
+      nodeSelector: #this will create the pod in a specific node
+        disktype: mysqlssd
+      containers:
+      - name: mysql
+        image: mysql:5.6
+        env:
+        - name: MYSQL_ROOT_PASSWORD #the key word is predefine by mysql image
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret #name of the secret
+              key: password #key of the secret which we want to use
+        ports:
+        - containerPort: 3306
+        volumeMounts: #this is also inside the container
+        - name: mysql-storage #this is the name of the volume which we are going to create in next step
+          mountPath: /var/lib/mysql
+        - name: mysql-config
+          mountPath: /docker-entrypoint-initdb.d/ #this is the path where mysql image will look for initialization scripts
+
+      volumes: #i need to attach the container volume with pvc
+      - name: mysql-storage
+        persistentVolumeClaim:
+          claimName: task-pv-clain #this is the name of the pvc which we are going to create in next step
+      - name: mysql-config
+        configMap:
+          name: user-config #name of the configmap which we have created earlier
+##once the pod is created lets check the deployment and all the attached value to the deployment 
+            #check all this three parameter 
+            1. secret manager is mapped
+            2. Mount pOint is mapped
+            3. configmap is mapped
+ Environment:
+      MYSQL_ROOT_PASSWORD:  <set to the key 'password' in secret 'mysql-secret'>  Optional: false
+    Mounts:
+      /docker-entrypoint-initdb.d/ from mysql-config (rw)
+      /var/lib/mysql from mysql-storage (rw)
+  Volumes:
+   mysql-storage:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  task-pv-clain
+###########################lets verify all the paramert by login inside the pod 
+       250  kubectl get pod
+      #change the pod id with your id
+  251  kubectl exec -it mysql-7b4df56757-k42bk -- /bin/bash
+      #############once login 
+      mysql -u root -p
+      ###password is dbpassword11
+      ###once login check the db is created or not 
+      show databses; 
+      ##you should see the usermgmt db is created
+      exit
+      exit
+      #lets check the pod is running on node 2 or not because we have use nodeslector
+      [root@eoc-controller ~]$ kubectl get pod -o wide
+NAME                                   READY   STATUS    RESTARTS   AGE     IP              NODE        NOMINATED NODE   READINESS GATES
+
+mysql-7b4df56757-k42bk                 1/1     Running   0          8m11s   10.10.203.16    eoc-node2   <none>           <none>
+
+      ###lets verify that a folder in node2 is created with the name usermgmt
+      ls /mnt/data
+  ##exercise again login to the database
+        251  kubectl exec -it mysql-7b4df56757-k42bk -- /bin/bash
+      #############once login 
+      mysql -u root -p
+      ###password is dbpassword11
+      ###once login check the db is created or not 
+      show databses; 
+      #lets create a new database employee
+      create database employee;
+      show databases;
+      ##you should see the employee db is created
+      exit
+      exit
+        ###now go back to node2 check employee folder is created or not

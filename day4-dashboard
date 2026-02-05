@@ -1,0 +1,48 @@
+#lets deploy the k8s dashboard
+   195  kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml
+#this will show that the dashboard is deploying in a namespace kube dashboard
+  196  kubectl get pod -A
+#check the service of k8s dashboard which is running as cluster ip
+  198  kubectl get svc -A
+  #we will edit it and change to NodePort
+  199  kubectl -n kubernetes-dashboard edit svc kubernetes-dashboard
+##once you open the edit 
+   35   type: CLusterIp #change it to NodePort
+ #save it using esc :wq
+   ##once save check the nodeport 
+   [root@eoc-controller ~]$ kubectl get svc -A
+NAMESPACE              NAME                        TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                  AGE
+
+kubernetes-dashboard   kubernetes-dashboard        NodePort    10.110.146.27   <none>        443:30578/TCP            5m35s
+  #in the browser put the ip address with node port also put https
+  ##to access the dashbaord we need to create a service account
+  vi sa.yml
+  ######
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admin-user
+  namespace: kubernetes-dashboard
+
+#apply it
+    kubectl apply -f sa.yml
+    ####lets create a RBAC
+  vi role.yml
+  ###################
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admin-user
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: admin-user
+  namespace: kubernetes-dashboard
+###apply it
+    kubectl apply -f role.yml
+    #################once applied generate the bearer token
+    kubectl -n kubernetes-dashboard create token admin-user
+    ##copy the token 

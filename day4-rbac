@@ -1,0 +1,25 @@
+#LETS CREATE AN NAMESPACE called as project-hamster
+258  kubectl create ns project-hamster
+ #lets create a service account which is like an user in k8s
+  260  kubectl create sa jane
+  ##namespace and service account jane they are two individual component
+  #now we will create a role
+  [root@eoc-controller ~]$ kubectl -n project-hamster create role devaccount --verb=create --resource=secret --resource=configmap
+role.rbac.authorization.k8s.io/devaccount created
+##if you see the role in namespace project hamster there is an role define --verb=create,update,delete,get,list resource=secret --resource=configmap
+  ##now also the role is being create in the namespace not yet attached with jane user
+  #we will attach this role with jane using rolebinding i have a role i need to bind with jane
+   268  kubectl -n project-hamster create rolebinding --help
+
+  [root@eoc-controller ~]$ kubectl -n project-hamster create rolebinding janedevrolebinding --role=devaccount --serviceaccount project-hamster:jane
+rolebinding.rbac.authorization.k8s.io/janedevrolebinding created
+[root@eoc-controller ~]$
+  #if you look into rolebind you will see that a new binding is being create with the role devaccount and serviceaccount jane
+  #now we need to test it that jane can create secret and configmap other than that jane cannot create update or delete anything
+    271  kubectl -n project-hamster create rolebinding janedevrolebinding --role=devaccount --serviceaccount project-hamster:jane
+  #lets verify jane can do what
+  272  kubectl -n project-hamster auth can-i create secret --as system:serviceaccount:project-hamster:jane
+  273  kubectl -n project-hamster auth can-i create configmap --as system:serviceaccount:project-hamster:jane
+  274  kubectl -n project-hamster auth can-i delete configmap --as system:serviceaccount:project-hamster:jane
+  275  kubectl -n project-hamster auth can-i list pod --as system:serviceaccount:project-hamster:jane
+

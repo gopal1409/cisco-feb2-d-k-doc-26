@@ -1,0 +1,33 @@
+##there are namespace which is alread created
+    163  kubectl get ns
+  #if you look into the pod you will see that all the system related pod is in system namespace
+  164  kubectl get pod -A
+  
+#####################################lets created our first namespace
+   167  kubectl create ns dev
+  168  kubectl get ns
+  #if you want to know more about the namespace you can use the describe command
+  169  kubectl describe ns dev
+########################################lets create quota and allocate this quota to this dev namespace
+  172  vi quota.yml
+apiVersion: v1 
+kind: ResourceQuota
+metadata:
+  name: quota-for-dev
+  namespace: dev #in the meta data of resource quota we need to define the namespace or if you do not define the namespace it will be applied to default namespace
+spec:
+  hard:
+    pods: "10" #in this particular namespace we can only create 10 pods
+    requests.cpu: "1" 
+    requests.memory: 1Gi
+    limits.cpu: "2"
+    limits.memory: 2Gi
+    #request.cpu: it is the minimum gurantee amount of cpu that a container can reserved
+    #limit.cpu: is the max amount of cpu a container is allower to use which can result in throtlling
+    
+  173  kubectl apply -f quota.yml
+      #you cannot see any resource quota with the below mentioned as it is looking into default namespace
+  174  kubectl get resourcequota
+  175  kubectl -n dev get resourcequota
+  #this will show the quota report
+  177  kubectl -n dev describe resourcequota

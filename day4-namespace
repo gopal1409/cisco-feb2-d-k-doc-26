@@ -31,3 +31,48 @@ spec:
   175  kubectl -n dev get resourcequota
   #this will show the quota report
   177  kubectl -n dev describe resourcequota
+#lets create a pod1 in this dev namespace
+179  vi qpod1.yml
+#add the below line upto 52
+apiVersion: v1
+kind: Pod
+metadata:
+  name: quota-mem-cpu-demo
+  namespace: dev
+spec:
+  containers:
+  - name: quota-mem-cpu-demo-ctr
+    image: nginx
+    resources:
+      limits:
+        memory: "800Mi" #container will use minimum of 800Mi memory
+        cpu: "800m"
+      requests:
+        memory: "600Mi" 
+        cpu: "400m"
+
+  180  kubectl apply -f qpod1.yml
+  181  kubectl get pod
+#describe command will show that in the dev namespace we are utilzing the quota
+  187  kubectl describe ns dev
+
+  190  vi qpod2.yml
+#copy paste till line 76
+apiVersion: v1
+kind: Pod
+metadata:
+  name: quota-mem-cpu-demo-2
+  namespace: dev
+spec:
+  containers:
+  - name: quota-mem-cpu-demo-2-ctr
+    image: redis
+    resources:
+      limits:
+        memory: "1Gi"
+        cpu: "800m"
+      requests:
+        memory: "700Mi"
+        cpu: "400m"
+##then apply it see why it is not creating this pod
+  191  kubectl apply -f qpod2.yml

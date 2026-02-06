@@ -1,0 +1,57 @@
+##to take the backup or restore the etcd backup you need to have a tool
+  etcdctl
+  ##lets install this tool
+  340  etcdctl
+  341  apt  install etcd-client
+  342  etcdctl
+##once installed 8%
+    345  ls /etc/kubernetes/manifests/
+  346  cat /etc/kubernetes/manifests/kube-apiserver.yaml
+  347  cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep etcd
+[root@eoc-controller ~]$ cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep etcd
+    - --etcd-cafile=/etc/kubernetes/pki/etcd/ca.crt
+    - --etcd-certfile=/etc/kubernetes/pki/apiserver-etcd-client.crt
+    - --etcd-keyfile=/etc/kubernetes/pki/apiserver-etcd-client.key
+    - --etcd-servers=https://127.0.0.1:2379
+##from the top you will find ca certificate etcd client certificate client key
+  #lets take the backup of etcd 
+   356  ETCDCTL_API=3 etcdctl  --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/apiserver-etcd-client.crt --key=/etc/kubernetes/pki/apiserver-etcd-client.key snapshot save /tmp/etcd-backup.db
+#the backup will be stored in /tmp/etcd-backup.db
+  #we will create a pod after taking the backup
+  kubectl run testpod --image=nginx
+  #if you want to check the backup done properly or not 
+  #we will move all the manifest file to an previous directory
+   360  cd /etc/kubernetes/manifests/
+  361  mv * ..
+  362  ls
+  #you can check the same in the previous folder 
+  363  cd ..
+  364  ls
+  365  cd manifests/
+##this manifest is related to master node
+  #lets restore the snapshot
+   370  ETCDCTL_API=3 etcdctl snapshot restore /tmp/etcd-backup.db --data-dir /var/lib/etcd-backup  --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/apiserver-etcd-client.crt --key=/etc/kubernetes/pki/apiserver-etcd-client.key
+  #we restore the backup to the /var/lib/etcd-backup
+  371  ls /var/lib/etcd-backup/
+  ##once restore we need to modify the etcd manifest file whcih is there in /etc/kubernetes
+  [root@eoc-controller manifests]$ vi /etc/kubernetes/etcd.yaml
+##inside this file go to the end in the host path it is showing /var/lib/etcd
+   - hostPath:
+ 88       path: /var/lib/etcd
+ 89       type: DirectoryOrCreate
+####change the same to etcd-backup
+   - hostPath:
+ 88       path: /var/lib/etcd-backup
+ 89       type: DirectoryOrCreate
+###once change save the file
+   #next we will move all the control plane manifest file back to /etc/kubernetes/manifest directory
+   [root@eoc-controller manifests]$ mv ../*.yaml .
+   #kindly check all the file has move back to the current directory
+[root@eoc-controller manifests]$ ls
+etcd.yaml  kube-apiserver.yaml  kube-controller-manager.yaml  kube-scheduler.yaml
+[root@eoc-controller manifests]$
+#now lets check the container of all the master componet are coming up or not 
+#now if you do check the test pod which is created after the backup it will not be there 
+kubectl get pod
+
+

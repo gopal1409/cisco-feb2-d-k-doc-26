@@ -1,0 +1,38 @@
+#network policy is supported by k8s using a plugin called as CNI plugin
+281  kubectl get nodes
+  282  kubectl get pod -A
+  283  kubectl -n kube-system get pod -o wide
+#lets create a namespace inside the namespace we will create two pod 
+    286  kubectl create ns ecom
+
+  288  kubectl -n ecom run frontend --image=nginx
+  289  kubectl -n ecom run backend --image=nginx
+  #we will expose both the pod internannly
+  290  kubectl -n ecom expose pod backend --port 80
+  291  kubectl -n ecom expose pod frontend --port 80
+#
+  293  kubectl -n ecom get pod,svc
+    #lets see they can communicate or not login isnidet the frontend and running a curl request to backend
+     298  kubectl -n ecom exec frontend -- curl backend
+  299  kubectl -n ecom exec backend -- curl frontend
+#############lets create a deny policy and stop the communication
+    301  vi default-deny.yml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+  namespace: ecom
+spec: #this is the specification about network policy
+  podSelector: {}
+  #we are defining the exceptions for ingress and egress traffic, if there is no exception then all the traffic will be denied
+  policyTypes:
+  - Ingress
+  - Egress
+  
+  302  kubectl apply -f default-deny.yml
+  303  kubectl -n ecom get networkpolicy
+    #describe policy will show ingress and egress they are blocked or none
+  304  kubectl -n ecom describe networkpolicy
+    #now frontend to backend or backend to frontend traffic stopped
+  305  kubectl -n ecom exec frontend -- curl backend
+  306  kubectl -n ecom exec backend -- curl frontend

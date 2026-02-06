@@ -42,6 +42,7 @@ eoc-node2        Ready                      node            190d   v1.33.0
   402  apt-get install kubectl=1.33.7-1.1 kubelet=1.33.7-1.1
   #once update the package
   #lets download the latest image 
+apt-mark hold kubeadm
   kubeadm config images pull
   ##lets run the upgrade 
   kubeadm upgrade apply v1.33.7

@@ -1,0 +1,57 @@
+#upgrade the master node than only upgrade the worker node
+   381  kubectl get nodes -o wide
+  382  apt-get update
+  383  apt-cache madison kubeadm
+  
+  385  kubelet version
+  386  kubelet --version
+  #next we need to cordon the node or drain the master node
+  [root@eoc-controller manifests]$ kubectl get nodes
+NAME             STATUS   ROLES           AGE    VERSION
+eoc-controller   Ready    control-plane   190d   v1.33.0
+eoc-node1        Ready    node            190d   v1.33.0
+eoc-node2        Ready    node            190d   v1.33.0
+[root@eoc-controller manifests]$ kubectl drain eoc-controller --ignore=damonsets --delete-empty-data
+error: unknown flag: --ignore
+See 'kubectl drain --help' for usage.
+#lets drain the node so that no more new workload will be deployed
+[root@eoc-controller manifests]$ kubectl drain eoc-controller --ignore-daemonsets --delete-emptydir-data
+node/eoc-controller cordoned
+Warning: ignoring DaemonSet-managed Pods: kube-system/calico-node-8qrx8, kube-system/kube-proxy-tn9bc
+evicting pod kube-system/coredns-674b8bbfcf-x2hwg
+evicting pod kube-system/calico-kube-controllers-576865d959-vmnqb
+evicting pod kube-system/coredns-674b8bbfcf-9hh2h
+pod/calico-kube-controllers-576865d959-vmnqb evicted
+pod/coredns-674b8bbfcf-9hh2h evicted
+pod/coredns-674b8bbfcf-x2hwg evicted
+node/eoc-controller drained
+  #once drain you can see that in master node is it showing scheduling disabled
+[root@eoc-controller manifests]$ kubectl get nodes
+NAME             STATUS                     ROLES           AGE    VERSION
+eoc-controller   Ready,SchedulingDisabled   control-plane   190d   v1.33.0
+eoc-node1        Ready                      node            190d   v1.33.0
+eoc-node2        Ready                      node            190d   v1.33.0
+[root@eoc-controller manifests]$
+  ######next we need to hold the kubelet kubeadm kubectl service
+    394  apt-mark hold kubelet kubectl kubeadm
+  395  killall -s SIGTERM kube-apiserver
+##lets upgrade the packages
+   399  apt-cache show kubeadm
+
+  401  apt-get install kubeadm=1.33.7-1.1
+  402  apt-get install kubectl=1.33.7-1.1 kubelet=1.33.7-1.1
+  #once update the package
+  #lets download the latest image 
+  kubeadm config images pull
+  ##lets run the upgrade 
+  kubeadm upgrade apply v1.33.7
+  #once upgrade complete 
+  systemctl restart containerd
+  systemctl restart kubelet
+  ###finally uncordon the node
+  kubectl uncordon eoc-controller
+  ###once uncordong
+  kubectl get nodes -o wide
+  #now it will show that the master is having a new version and ready
+
+

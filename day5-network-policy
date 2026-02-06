@@ -36,3 +36,61 @@ spec: #this is the specification about network policy
     #now frontend to backend or backend to frontend traffic stopped
   305  kubectl -n ecom exec frontend -- curl backend
   306  kubectl -n ecom exec backend -- curl frontend
+#lets create an exception where frontend can intiate traffic to backend
+312  vi frontend-policy.yml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: frontend-policy
+  namespace: ecom
+spec:
+  podSelector:
+    matchLabels:
+      run: frontend
+  policyTypes:
+  - Egress
+  egress:
+  - to: #this is the destination for egress traffic
+    - podSelector:
+        matchLabels:
+          run: backend
+  
+
+
+  313  kubectl apply -f frontend-policy.yml
+ 
+  315  kubectl -n ecom get networkpolicy frontend-policy
+#check the describe command which is readable 
+  316  kubectl -n ecom describe networkpolicy frontend-policy
+####lets check if frontend can intiate traffic to backend or not 
+kubectl -n ecom exec frontend -- curl backend
+#it is not working 
+  319  vi backend-policy.yml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: backend-policy
+  namespace: ecom
+spec:
+  podSelector:
+    matchLabels:
+      run: backend
+  policyTypes:
+  - Ingress
+  ingress:
+  - from: #this is the destination for egress traffic
+    - podSelector:
+        matchLabels:
+          run: frontend
+  
+
+
+  320  kubectl apply -f backend-policy.yml
+  321  kubectl -n ecom get networkpolicy backend-policy
+  322  kubectl -n ecom describe networkpolicy backend-policy
+#now also the traffic from frontend to backend is not working
+  323  kubectl -n ecom exec frontend -- curl backend
+##lets make it work 
+  326  kubectl -n ecom get pod -o wide
+#check the ip address 
+  327  kubectl -n ecom exec frontend -- curl 10.10.228.144

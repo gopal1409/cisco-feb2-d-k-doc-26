@@ -1,0 +1,20 @@
+#first drain the node
+417  kubectl get nodes
+  418  kubectl drain eoc-node1
+#once drain 
+  420  kubectl drain eoc-node1 --ignore-daemonsets --delete-emptydir-data --force
+  421  kubectl get pod
+  ##get nodes will show that the node is not in scheduling state 
+  422  kubectl get nodes
+  #login to the worker node
+  15  apt-get update
+   16  apt-cache madison kubeadm
+   17  apt-mark unhold kubeadm
+
+
+   20  apt-get install kubeadm=1.33.7-1.1
+   21  apt-get install kubectl=1.33.7-1.1
+   22  apt-get install kubelet=1.33.7-1.1
+   23  apt-mark hold kubeadm
+  ###now log back to master node
+  kubeadm upgrade node

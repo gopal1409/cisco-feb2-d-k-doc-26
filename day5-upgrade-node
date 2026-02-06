@@ -17,4 +17,7 @@
    22  apt-get install kubelet=1.33.7-1.1
    23  apt-mark hold kubeadm
   ###now log back to master node
+systemctl restart containerd
+systemctl restart kubelet
   kubeadm upgrade node
+#
